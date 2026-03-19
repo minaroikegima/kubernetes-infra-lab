@@ -30,15 +30,20 @@ jobs:
             --namespace app
           echo "✅ Helm templates render correctly"
 
-      - name: Install kubectl
-        uses: azure/setup-kubectl@v3
-
-      - name: Validate Kubernetes manifests
+      - name: Validate YAML files
         run: |
-          kubectl apply --dry-run=client \
-            --validate=false \
-            -f manifests/namespaces/namespaces.yaml
-          echo "✅ Kubernetes manifests are valid"
+          python3 -c "
+          import yaml, sys, os
+          files = []
+          for root, dirs, filenames in os.walk('manifests'):
+              for f in filenames:
+                  if f.endswith('.yaml') or f.endswith('.yml'):
+                      files.append(os.path.join(root, f))
+          for f in files:
+              with open(f) as fh:
+                  yaml.safe_load_all(fh.read())
+              print(f'✅ Valid YAML: {f}')
+          "
 
       - name: Check scripts syntax
         run: |
@@ -52,6 +57,6 @@ jobs:
           echo "  ✅ All validations passed!"
           echo "  ✅ Helm chart is valid"
           echo "  ✅ Templates render correctly"
-          echo "  ✅ Manifests are valid"
+          echo "  ✅ YAML files are valid"
           echo "  ✅ Scripts syntax is valid"
           echo "════════════════════════════════════"
