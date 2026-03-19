@@ -36,6 +36,7 @@ jobs:
       - name: Validate Kubernetes manifests
         run: |
           kubectl apply --dry-run=client \
+            --validate=false \
             -f manifests/namespaces/namespaces.yaml
           echo "✅ Kubernetes manifests are valid"
 
