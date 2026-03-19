@@ -1,0 +1,56 @@
+name: Kubernetes Lab CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate-kubernetes:
+    name: Validate Kubernetes Configs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: v3.13.0
+
+      - name: Validate Helm chart
+        run: |
+          helm lint helm/charts/app
+          echo "✅ Helm chart is valid"
+
+      - name: Validate Helm templates
+        run: |
+          helm template my-app helm/charts/app \
+            --namespace app
+          echo "✅ Helm templates render correctly"
+
+      - name: Install kubectl
+        uses: azure/setup-kubectl@v3
+
+      - name: Validate Kubernetes manifests
+        run: |
+          kubectl apply --dry-run=client \
+            -f manifests/namespaces/namespaces.yaml
+          echo "✅ Kubernetes manifests are valid"
+
+      - name: Check scripts syntax
+        run: |
+          bash -n scripts/cluster-setup.sh
+          echo "✅ cluster-setup.sh syntax is valid"
+
+      - name: Summary
+        run: |
+          echo ""
+          echo "════════════════════════════════════"
+          echo "  ✅ All validations passed!"
+          echo "  ✅ Helm chart is valid"
+          echo "  ✅ Templates render correctly"
+          echo "  ✅ Manifests are valid"
+          echo "  ✅ Scripts syntax is valid"
+          echo "════════════════════════════════════"
