@@ -1,0 +1,55 @@
+# Default values for linux-infra-app
+
+# Number of pod replicas
+replicaCount: 2
+
+# Container image settings
+image:
+  repository: nginx
+  tag: "1.25-alpine"
+  pullPolicy: IfNotPresent
+
+# Service settings
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 80
+
+# Resource limits per pod
+resources:
+  requests:
+    cpu: "100m"
+    memory: "128Mi"
+  limits:
+    cpu: "500m"
+    memory: "512Mi"
+
+# Auto scaling settings
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 80
+
+# Health check settings
+livenessProbe:
+  path: /
+  port: 80
+  initialDelaySeconds: 30
+  periodSeconds: 10
+
+readinessProbe:
+  path: /
+  port: 80
+  initialDelaySeconds: 10
+  periodSeconds: 5
+
+# Ingress settings
+ingress:
+  enabled: false
+  className: nginx
+  host: app.example.com
+
+# Namespace
+namespace: app

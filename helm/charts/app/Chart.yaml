@@ -1,0 +1,13 @@
+apiVersion: v2
+name: linux-infra-app
+description: A sample application for the Kubernetes Infrastructure Lab
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+keywords:
+  - linux
+  - infrastructure
+  - kubernetes
+maintainers:
+  - name: Infrastructure Team
+    email: infra@example.com
